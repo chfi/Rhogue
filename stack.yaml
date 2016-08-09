@@ -1,0 +1,8 @@
+flags: {}
+extra-package-dbs: []
+packages:
+- '.'
+extra-deps:
+- listsafe-0.1.0.1
+- ncurses-0.2.15
+resolver: lts-6.10
