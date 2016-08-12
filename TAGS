@@ -8,7 +8,9 @@ module LibLib0,1
 someFunc someFunc4,5
 someFunc someFunc5,6
 
-./app/Main.hs,1317
+./src/GameState.hs,0
+
+./app/Main.hs,1456
 module Main Main0,1
 type Point Point11,12
 data Tile Tile14,15
@@ -24,40 +26,44 @@ data GameState = GameStateGameState29,30
   { playerPoint playerPoint30,31
   , world world31,32
   , turnNumber turnNumber32,33
-  , log log33,34
+  , history history33,34
 instance instance41,42
 makeFloor makeFloor46,47
 makeWall makeWall47,48
 dungeon dungeon50,51
 dungeon dungeon51,52
-getTile getTile71,72
-getTile getTile72,73
-isPassable isPassable76,77
-isPassable isPassable77,78
-validateAction validateAction85,86
-validateAction validateAction86,87
-updatePlayer updatePlayer91,92
-updatePlayer updatePlayer92,93
-addPoints addPoints97,98
-addPoints addPoints98,99
-playerMove playerMove102,103
-playerMove playerMove103,104
-drawTile drawTile110,111
-drawTile drawTile111,112
-drawRow drawRow113,114
-drawRow drawRow114,115
-drawWorld drawWorld119,120
-drawWorld drawWorld120,121
-drawPlayer drawPlayer122,123
-drawPlayer drawPlayer123,124
-pos pos127,128
-pos pos128,129
-main main130,131
-main main131,132
-updateGameState updateGameState141,142
-updateGameState updateGameState142,143
-run run150,151
-run run151,152
+getTile getTile73,74
+getTile getTile74,75
+isPassable isPassable78,79
+isPassable isPassable79,80
+validateAction validateAction87,88
+validateAction validateAction88,89
+updatePlayer updatePlayer93,94
+updatePlayer updatePlayer94,95
+addPoints addPoints99,100
+addPoints addPoints100,101
+playerMove playerMove104,105
+playerMove playerMove105,106
+drawTile drawTile112,113
+drawTile drawTile113,114
+drawRow drawRow115,116
+drawRow drawRow116,117
+drawWorld drawWorld121,122
+drawWorld drawWorld122,123
+drawPlayer drawPlayer124,125
+drawPlayer drawPlayer125,126
+drawStringLine drawStringLine130,131
+drawStringLine drawStringLine131,132
+drawLog drawLog136,137
+drawLog drawLog137,138
+pos pos143,144
+pos pos144,145
+main main146,147
+main main147,148
+updateGameState updateGameState158,159
+updateGameState updateGameState159,160
+run run167,168
+run run168,169
 
 ./Setup.hs,15
 main main1,2

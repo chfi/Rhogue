@@ -29,9 +29,9 @@ data PlayerAction =
 
 data GameState = GameState
   { playerPoint :: Point
-  , world :: World
-  , turnNumber :: Integer
-  , log :: [String]
+  , world       :: World
+  , turnNumber  :: Integer
+  , history     :: [String]
   } deriving (Eq, Show)
 
 
@@ -49,24 +49,26 @@ makeWall = repeat Wall
 
 -- ugliest map in the history of video games??
 dungeon :: World
-dungeon = [take 10 makeFloor
-          ,take 5 makeWall ++ take 5 makeFloor
-          ,take 10 makeFloor
-          ,take 10 makeFloor
-          ,take 10 makeFloor
-          ,take 5 makeFloor ++ take 5 makeWall
-          ,take 5 makeFloor ++ [Wall] ++ take 3 makeFloor ++ [Wall]
-          ,take 9 makeFloor ++ [Wall]
-          ,take 5 makeFloor ++ [Wall] ++ take 3 makeFloor ++ [Wall]
-          ,take 5 makeFloor ++ [Wall] ++ take 3 makeFloor ++ [Wall]
-          ,take 5 makeFloor ++ [Wall] ++ take 3 makeFloor ++ [Wall]
-          ,take 5 makeFloor ++ [Wall] ++ take 3 makeFloor ++ [Wall]
-          ,take 5 makeFloor ++ take 5 makeWall
-          ,take 10 makeFloor
-          ,take 10 makeFloor
-          ,take 10 makeFloor
-          ,take 10 makeFloor
-          ,take 10 makeFloor
+dungeon = [take 80 makeFloor
+          ,take 5 makeWall ++ take 75 makeFloor ++ take 70 makeFloor
+          ,take 80 makeFloor
+          ,take 80 makeFloor
+          ,take 80 makeFloor
+          ,take 5 makeFloor ++ take 5 makeWall ++ take 70 makeFloor
+          ,take 5 makeFloor ++ [Wall] ++ take 3 makeFloor ++ [Wall] ++ take 70 makeFloor
+          ,take 9 makeFloor ++ [Wall] ++ take 70 makeFloor
+          ,take 5 makeFloor ++ [Wall] ++ take 3 makeFloor ++ [Wall] ++ take 70 makeFloor
+          ,take 5 makeFloor ++ [Wall] ++ take 3 makeFloor ++ [Wall] ++ take 70 makeFloor
+          ,take 5 makeFloor ++ [Wall] ++ take 3 makeFloor ++ [Wall] ++ take 70 makeFloor
+          ,take 5 makeFloor ++ [Wall] ++ take 3 makeFloor ++ [Wall] ++ take 70 makeFloor
+          ,take 5 makeFloor ++ take 5 makeWall ++ take 70 makeFloor
+          ,take 80 makeFloor
+          ,take 80 makeFloor
+          -- ,take 80 makeFloor
+          ,take 30 makeFloor ++ take 20 makeWall ++ take 30 makeFloor
+          ,take 80 makeFloor
+          ,take 80 makeFloor
+          ,take 80 makeFloor
           ]
 
 getTile :: World -> Point -> Maybe Tile
@@ -125,6 +127,20 @@ drawPlayer p = do
   uncurry moveCursor p
   drawTile Player
 
+
+drawStringLine :: String -> Update ()
+drawStringLine s = do
+  (row,col) <- cursorPosition
+  drawString s
+  moveCursor (row + 1) col
+
+drawLog :: [String] -> Update ()
+drawLog history = do
+  (rows,cols) <- windowSize
+  let logmax = fromInteger (rows - 2)
+  mapM_ drawStringLine $ take logmax history
+
+
 pos :: Point
 pos = (8,3)
 
@@ -132,15 +148,16 @@ main :: IO ()
 main = runCurses $ do
   setEcho False
   setCursorMode CursorInvisible
-  w <- defaultWindow
-  run (GameState pos dungeon 0 []) w
+  scr <- newWindow 20 80 0 0
+  logscr <- newWindow 10 80 19 0
+  run (GameState pos dungeon 0 ["hello world"]) (scr, logscr)
 
 
 -- GameState should use the state monad - clean this up a bit
 -- at the very least use more record syntax
 -- use RecordWildcards
 updateGameState :: Maybe PlayerAction -> GameState -> GameState
-updateGameState pa gs = GameState p' w' (t+1) []
+updateGameState pa gs = GameState p' w' (t+1) (show pa : history gs)
   where p = playerPoint gs
         w' = world gs
         t = turnNumber gs
@@ -148,14 +165,20 @@ updateGameState pa gs = GameState p' w' (t+1) []
                         Just m -> updatePlayer p m
 
 
-run :: GameState -> Window -> Curses ()
-run gs w = do
-  ev <- getEvent w Nothing
+run :: GameState -> (Window, Window) -> Curses ()
+run gs (scr, logscr) = do
+  ev <- getEvent scr Nothing
   let pa = (ev >>= playerMove) >>= validateAction (world gs) (playerPoint gs)
       gs' = updateGameState pa gs
-  updateWindow w $ do
+  updateWindow scr $ do
     clear
     drawWorld (world gs')
     drawPlayer (playerPoint gs')
+
+  updateWindow logscr $ do
+    clear
+    drawBorder Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
+    moveCursor 1 1
+    drawLog (history gs')
   render
-  run gs' w
+  run gs' (scr, logscr)
