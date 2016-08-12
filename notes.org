@@ -54,3 +54,13 @@ then we could have a
 updatePlayer :: Player -> PlayerAction -> Player
 
 as part of the GameState update.
+
+
+
+... Each part of the gamestate could have an instance of some Updateable typeclass
+
+it would be nice if each update could be defined solely by the current state
+and some changes to it, rather than the current state and the whole next state
+
+sort of what I've done with PlayerActions and movements using deltas...
+  except more thought out
