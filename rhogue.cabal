@@ -15,12 +15,16 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     GameState
+  exposed-modules:     Actor
+                     , GameState
+                     , Level
   build-depends:       base >= 4.7 && < 5
                      , ncurses
                      , transformers
                      , text
                      , listsafe
+                     , containers
+                     , pqueue
   default-language:    Haskell2010
 
 executable rhogue

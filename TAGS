@@ -3,67 +3,114 @@
 main main0,1
 main main1,2
 
+./src/Level.hs,887
+newtype Point Point11,12
+newtype Point = Point Point11,12
+  Point (a,b) `compare`compare16,17
+addPoints addPoints21,22
+addPoints addPoints22,23
+type Level Level24,25
+emptyLevel emptyLevel27,28
+emptyLevel emptyLevel28,29
+data Tile Tile32,33
+    FloorFloor33,34
+  | WallWall34,35
+  | PlayerPlayer35,36
+instance instance39,40
+levelToList levelToList45,46
+levelToList levelToList46,47
+getTile getTile53,54
+getTile getTile55,56
+isPointPassable isPointPassable58,59
+isPointPassable isPointPassable59,60
+isMoveValid isMoveValid65,66
+isMoveValid isMoveValid66,67
+parseTile parseTile68,69
+parseTile parseTile69,70
+parseLine parseLine72,73
+parseLine parseLine73,74
+parseLines parseLines75,76
+parseLines parseLines76,77
+parseToTiles parseToTiles78,79
+parseToTiles parseToTiles79,80
+parseLevel parseLevel84,85
+parseLevel parseLevel85,86
+
 ./src/Lib.hs,65
 module LibLib0,1
 someFunc someFunc4,5
 someFunc someFunc5,6
 
-./src/GameState.hs,0
+./src/Actor.hs,633
+data ControlInput ControlInput25,26
+data ControlInput = Input Input25,26
+data ControlInput = Input Event | TriggerTrigger25,26
+data Action Action27,28
+    Move Move28,29
+  | WaitWait29,30
+  | Say Say30,31
+type Memory Memory34,35
+type ActorController ActorController40,41
+type AIController AIController41,42
+handlePlayerInput handlePlayerInput50,51
+handlePlayerInput handlePlayerInput51,52
+handleAITurn handleAITurn62,63
+  | t `mod`mod64,65
+data Actor Actor77,78
+data Actor = ActorActor77,78
+  { point point78,79
+  , nextTurn nextTurn79,80
+  , controller controller80,81
+  , unique unique81,82
 
-./app/Main.hs,1456
-module Main Main0,1
-type Point Point11,12
-data Tile Tile14,15
-    FloorFloor15,16
-  | WallWall16,17
-  | PlayerPlayer17,18
-type World World20,21
-data PlayerAction PlayerAction23,24
-    Move Move24,25
-  | WaitWait25,26
-data GameState GameState29,30
-data GameState = GameStateGameState29,30
-  { playerPoint playerPoint30,31
-  , world world31,32
-  , turnNumber turnNumber32,33
-  , history history33,34
-instance instance41,42
-makeFloor makeFloor46,47
-makeWall makeWall47,48
-dungeon dungeon50,51
-dungeon dungeon51,52
-getTile getTile73,74
-getTile getTile74,75
-isPassable isPassable78,79
-isPassable isPassable79,80
-validateAction validateAction87,88
-validateAction validateAction88,89
-updatePlayer updatePlayer93,94
-updatePlayer updatePlayer94,95
-addPoints addPoints99,100
-addPoints addPoints100,101
-playerMove playerMove104,105
-playerMove playerMove105,106
-drawTile drawTile112,113
-drawTile drawTile113,114
-drawRow drawRow115,116
-drawRow drawRow116,117
-drawWorld drawWorld121,122
-drawWorld drawWorld122,123
-drawPlayer drawPlayer124,125
-drawPlayer drawPlayer125,126
-drawStringLine drawStringLine130,131
-drawStringLine drawStringLine131,132
-drawLog drawLog136,137
-drawLog drawLog137,138
-pos pos143,144
-pos pos144,145
-main main146,147
-main main147,148
-updateGameState updateGameState158,159
-updateGameState updateGameState159,160
-run run167,168
-run run168,169
+./src/GameState.hs,743
+data Effect Effect25,26
+    ActorEffect ActorEffect26,27
+  | LogEffect LogEffect27,28
+  | LevelEffect LevelEffect28,29
+  | MultiEffect MultiEffect29,30
+instance instance32,33
+moveActor moveActor39,40
+moveActor moveActor40,41
+addToLog addToLog44,45
+addToLog addToLog45,46
+addLogPrefix addLogPrefix48,49
+addLogPrefix addLogPrefix49,50
+type GameLog GameLog54,55
+data GameState GameState56,57
+data GameState = GameStateGameState56,57
+  { --actors --actors57,58
+  player player58,59
+  , level level60,61
+  , gameTime gameTime61,62
+  , gameLog gameLog62,63
+validateAction validateAction68,69
+validateAction validateAction69,70
+updateGameState updateGameState75,76
+updateGameState updateGameState76,77
+
+./app/Main.hs,498
+module Main Main4,5
+drawTile drawTile21,22
+drawTile drawTile22,23
+drawRow drawRow24,25
+drawRow drawRow25,26
+drawLevel drawLevel30,31
+drawLevel drawLevel31,32
+drawPlayer drawPlayer33,34
+drawPlayer drawPlayer34,35
+drawStringLine drawStringLine39,40
+drawStringLine drawStringLine40,41
+drawLog drawLog45,46
+drawLog drawLog46,47
+pos pos52,53
+pos pos53,54
+newPlayer newPlayer56,57
+newPlayer newPlayer57,58
+main main65,66
+main main66,67
+run run78,79
+run run79,80
 
 ./Setup.hs,15
 main main1,2
