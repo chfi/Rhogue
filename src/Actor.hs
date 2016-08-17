@@ -59,7 +59,6 @@ handlePlayerInput (Input ev) = case ev of
   _ -> Nothing
 
 
-
 handleAITurn :: AIController
 handleAITurn t
   | t `mod` 2 == 0 = (\_ -> Just $ Move $ Point (-1, 0), t + 1)
@@ -67,17 +66,10 @@ handleAITurn t
   | otherwise = (const Nothing, t + 1)
 
 
--- createActor :: Controller -> Point -> Actor
--- createActor c p = Actor {
---     point = p
---   , nextTurn = 0
---   , controller = c
---   , unique = u
---                         }
-
 data Actor = Actor
   { point      :: Point
   , nextTurn   :: Integer
+  , speed      :: Integer
   , controller :: ActorController
-  , unique       :: Unique
+  , unique     :: Unique
   }

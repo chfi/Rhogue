@@ -41,7 +41,7 @@ module LibLib0,1
 someFunc someFunc4,5
 someFunc someFunc5,6
 
-./src/Actor.hs,633
+./src/Actor.hs,656
 data ControlInput ControlInput25,26
 data ControlInput = Input Input25,26
 data ControlInput = Input Event | TriggerTrigger25,26
@@ -54,63 +54,81 @@ type ActorController ActorController40,41
 type AIController AIController41,42
 handlePlayerInput handlePlayerInput50,51
 handlePlayerInput handlePlayerInput51,52
-handleAITurn handleAITurn62,63
-  | t `mod`mod64,65
-data Actor Actor77,78
-data Actor = ActorActor77,78
-  { point point78,79
-  , nextTurn nextTurn79,80
-  , controller controller80,81
-  , unique unique81,82
+handleAITurn handleAITurn61,62
+  | t `mod`mod63,64
+data Actor Actor68,69
+data Actor = ActorActor68,69
+  { point point69,70
+  , nextTurn nextTurn70,71
+  , speed speed71,72
+  , controller controller72,73
+  , unique unique73,74
 
-./src/GameState.hs,743
-data Effect Effect25,26
-    ActorEffect ActorEffect26,27
-  | LogEffect LogEffect27,28
-  | LevelEffect LevelEffect28,29
-  | MultiEffect MultiEffect29,30
-instance instance32,33
-moveActor moveActor39,40
+./src/GameState.hs,1128
+data Effect Effect26,27
+    ActorEffect ActorEffect27,28
+  | LogEffect LogEffect28,29
+  | LevelEffect LevelEffect29,30
+  | MultiEffect MultiEffect30,31
+instance instance33,34
 moveActor moveActor40,41
-addToLog addToLog44,45
+moveActor moveActor41,42
 addToLog addToLog45,46
-addLogPrefix addLogPrefix48,49
+addToLog addToLog46,47
 addLogPrefix addLogPrefix49,50
-type GameLog GameLog54,55
-data GameState GameState56,57
-data GameState = GameStateGameState56,57
-  { --actors --actors57,58
-  player player58,59
-  , level level60,61
-  , gameTime gameTime61,62
-  , gameLog gameLog62,63
-validateAction validateAction68,69
-validateAction validateAction69,70
-updateGameState updateGameState75,76
-updateGameState updateGameState76,77
+addLogPrefix addLogPrefix50,51
+type GameLog GameLog55,56
+type ActorQueue ActorQueue56,57
+data GameState GameState58,59
+data GameState = GameStateGameState58,59
+  { actors actors59,60
+  , actorQueue actorQueue60,61
+  , level level61,62
+  , gameTime gameTime62,63
+  , gameLog gameLog63,64
+isTurnNow isTurnNow69,70
+isTurnNow isTurnNow70,71
+getNextActor getNextActor80,81
+getNextActor getNextActor82,83
+validateAction validateAction99,100
+validateAction validateAction100,101
+updateGameState updateGameState107,108
+updateGameState updateGameState108,109
+createGameState createGameState117,118
+createGameState createGameState118,119
+addActor addActor128,129
+addActor addActor129,130
+updateActorTime updateActorTime134,135
+updateActorTime updateActorTime135,136
 
-./app/Main.hs,498
+./app/Main.hs,680
 module Main Main4,5
-drawTile drawTile21,22
-drawTile drawTile22,23
-drawRow drawRow24,25
-drawRow drawRow25,26
-drawLevel drawLevel30,31
-drawLevel drawLevel31,32
-drawPlayer drawPlayer33,34
-drawPlayer drawPlayer34,35
-drawStringLine drawStringLine39,40
-drawStringLine drawStringLine40,41
-drawLog drawLog45,46
-drawLog drawLog46,47
-pos pos52,53
-pos pos53,54
-newPlayer newPlayer56,57
-newPlayer newPlayer57,58
-main main65,66
-main main66,67
-run run78,79
-run run79,80
+drawTile drawTile25,26
+drawTile drawTile26,27
+drawRow drawRow28,29
+drawRow drawRow29,30
+drawLevel drawLevel34,35
+drawLevel drawLevel35,36
+drawPlayer drawPlayer37,38
+drawPlayer drawPlayer38,39
+drawStringLine drawStringLine43,44
+drawStringLine drawStringLine44,45
+drawLog drawLog49,50
+drawLog drawLog50,51
+pos pos56,57
+pos pos57,58
+newPlayer newPlayer60,61
+newPlayer newPlayer61,62
+main main70,71
+main main71,72
+takeTurn takeTurn90,91
+takeTurn takeTurn91,92
+drawGame drawGame128,129
+drawGame drawGame129,130
+drawLogWindow drawLogWindow136,137
+drawLogWindow drawLogWindow137,138
+run run145,146
+run run146,147
 
 ./Setup.hs,15
 main main1,2

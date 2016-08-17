@@ -5,12 +5,16 @@
 module Main where
 
 
-import Control.Monad.IO.Class
-import           Data.List.Safe ((!!))
-import           Data.Text      (Text)
-import qualified Data.Text      as T
-import qualified Data.Unique as U
-import           Prelude        hiding ((!!))
+import Control.Monad
+import           Control.Monad.IO.Class
+import           Data.List.Safe         ((!!))
+import Data.Map.Strict (Map)
+import qualified Data.Map.Strict as M
+import Data.Maybe
+import           Data.Text              (Text)
+import qualified Data.Text              as T
+import qualified Data.Unique            as U
+import           Prelude                hiding ((!!))
 import           UI.NCurses
 
 
@@ -57,7 +61,8 @@ pos = Point (1,1)
 newPlayer :: U.Unique -> Actor
 newPlayer u = Actor {
     point = pos
-  , nextTurn = 0
+  , nextTurn = 5
+  , speed = 1
   , controller = handlePlayerInput
   , unique = u
                }
@@ -72,29 +77,82 @@ main = runCurses $ do
   uniq <- liftIO U.newUnique
   levelText <- liftIO $ readFile "level.txt"
   let dungeon = Level.parseLevel $ T.pack levelText
-  run (GameState (newPlayer uniq) dungeon 0 [T.pack "hello world"]) (scr, logscr)
+  let p = newPlayer uniq
+  let gs = createGameState { level = dungeon }
+      gs' = addActor p gs
+  run gs' (scr, logscr)
+  -- return ()
+  -- run (GameState (newPlayer uniq) dungeon 0 [T.pack "hello world"]) (scr, logscr)
   -- run (GameState (newPlayer uniq) emptyLevel 0 [T.pack "hello world"]) (scr, logscr)
 
 
-run :: GameState -> (Window, Window) -> Curses ()
-run gs (scr, logscr) = do
-  -- the earliest of beginnings of a time system
 
-  ev <- if gameTime gs `mod` 2 == 0 then getEvent scr Nothing
-                                      else return Nothing
 
-  let eff = ((fmap Input ev) >>= handlePlayerInput) >>= validateAction (level gs) (player gs)
-      gs' = case eff of Just e -> updateGameState e gs
-                        Nothing -> gs
+takeTurn :: GameState -> Window -> Curses GameState
+takeTurn gs scr = do
+{--
+rough pseudocode:
+if there is a nextActor (we _know_ there is at this point...)
+get that actor's action via their actorcontroller.
+if the action is nothing, fail out; return the original gamestate.
+if there is an action, perform it on the gamestate.
+  also update the actorqueue
+
+so, if there _is_ a next actor, then the game should "pause".
+otherwise, it should _always_ step forward.
+--}
+
+  let next = getNextActor gs
+  case next of
+    Nothing -> return gs
+    Just (u, aq) -> do
+      let a = M.lookup u (actors gs)
+      case a of
+        Nothing -> return gs
+        Just a' -> do
+          ev <- getEvent scr Nothing
+          let eff = (fmap Input ev >>= (controller a')) >>= validateAction (level gs) a'
+              gs' = case eff of Just e -> updateGameState e gs
+                                Nothing -> gs
+              a'' = M.lookup u (actors gs')
+          case a'' of
+            Nothing -> return gs
+            Just a3  -> return $ updateActorTime a3 $ gs' { gameLog = T.pack ("Turn: actor " ++
+                                                                       (show $ U.hashUnique (unique a3))) : gameLog gs'
+                                                          , actorQueue = aq}
+          -- case ev of
+          --   Nothing -> return gs
+          --   Just ev ->
+
+
+
+drawGame :: Window -> GameState -> Curses ()
+drawGame scr gs' =
   updateWindow scr $ do
     clear
     drawLevel (level gs')
-    drawPlayer (player gs')
+    mapM_ drawPlayer (actors gs')
 
+
+drawLogWindow :: Window -> GameState -> Curses ()
+drawLogWindow logscr gs' =
   updateWindow logscr $ do
     clear
     drawBorder Nothing Nothing Nothing Nothing Nothing Nothing Nothing Nothing
     moveCursor 1 1
     drawLog (gameLog gs')
+
+
+run :: GameState -> (Window, Window) -> Curses ()
+run gs (scr, logscr) = do
+  let turn = isTurnNow gs
+
+  gs' <- if turn then takeTurn gs scr else return gs { gameLog = (T.pack $ show $ gameTime gs) : gameLog gs
+                                                     , gameTime = gameTime gs + 1}
+
+  when turn $ drawGame scr gs'
+  when turn $ drawLogWindow logscr gs'
+
   render
-  run (gs' {gameTime = gameTime gs' + 1}) (scr, logscr)
+
+  run gs' (scr, logscr)

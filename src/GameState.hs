@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module GameState where
     -- ( GameState
@@ -24,7 +25,7 @@ import Actor
 
 -- would be nice to have the type of effect actually in the type...
 data Effect =
-    ActorEffect (Actor -> Actor)
+    ActorEffect (Unique, (Actor -> Actor))
   | LogEffect (GameLog -> GameLog)
   | LevelEffect (Level -> Level)
   | MultiEffect [Effect]
@@ -37,9 +38,9 @@ instance Show Effect where
 
 
 -- moveActor :: Point -> Actor -> Actor
-moveActor :: Point -> Effect
-moveActor p = ActorEffect $ \a -> a { point = addPoints (point a) p
-                                    , nextTurn = 3 + nextTurn a }
+moveActor :: Unique -> Point -> Effect
+moveActor u p = ActorEffect (u, \a -> a { point = addPoints (point a) p
+                                        , nextTurn = speed a + nextTurn a })
 
 
 addToLog :: Text -> Effect
@@ -53,11 +54,11 @@ addLogPrefix _ _ = error "Attempt to add log prefix to other effect"
 
 
 type GameLog = [Text]
+type ActorQueue = MinPQueue Integer Unique
 
 data GameState = GameState
-  { --actors :: Map Unique Actor
-  player :: Actor
-  --, actorQueue :: MinPQueue Integer Unique
+  { actors :: Map Unique Actor
+  , actorQueue :: MinPQueue Integer Unique
   , level :: Level
   , gameTime :: Integer
   , gameLog :: GameLog
@@ -65,18 +66,78 @@ data GameState = GameState
 
 
 
+-- returns true if someone should take a turn
+isTurnNow :: GameState -> Bool
+isTurnNow GameState{..} = case next of Nothing -> False
+                                       Just (nt,_) -> gameTime >= nt
+  where next = PQ.getMin actorQueue
+
+
+-- if it isn't anyone's turn, Nothing
+-- else Just (next turn ID, actorQueue with first element removed)
+
+
+-- this could be replaced by PQ.minView
+getNextActor :: GameState -> Maybe (Unique, ActorQueue)
+-- getNextActor GameState{..} = PQ.minView actorQueue
+getNextActor GameState{..} = do
+  (nt,u) <- PQ.getMin actorQueue
+  uniq <- if nt >= gameTime then Just u else Nothing
+  return (uniq, PQ.deleteMin actorQueue)
+
+
+-- i haven't quite thought this through.
+-- how should changing the actorQueue work as the game progresses?
+-- if there is an actor that will take their move, we should remove
+-- it from the queue, replacing it after the corresponding effects
+-- have been performed.
+-- well, that makes sense. we grab it, shrinking the queue, and then
+-- we have a Unique. we do the things with that, including updating
+-- the gamestate, then grab the new actor from `actors`, take the
+-- new `gameTime`, and insert into the queue.
+
 
 validateAction :: Level -> Actor -> Action -> Maybe Effect
 validateAction l actor action = case action of
   Wait -> Nothing
-  Move d -> if isMoveValid l (point actor) d then Just $ moveActor d else Nothing
+  Move d -> if isMoveValid l (point actor) d then Just $ moveActor u d else Nothing
+    where u = unique actor
   Say t -> Just $ addToLog t
 
 
 updateGameState :: Effect -> GameState -> GameState
 updateGameState eff gs = case eff of
-  ActorEffect f -> gs { player = f (player gs) }
+  ActorEffect (u,f) -> gs { actors = actors' }
+    where actors' = M.adjust f u (actors gs)
   f@(LogEffect _) -> gs { gameLog = prefixed (gameLog gs) }
     where (LogEffect prefixed) = addLogPrefix (T.pack (show (gameTime gs))) f
   LevelEffect f -> gs { level = f (level gs) }
   MultiEffect fs -> foldr updateGameState gs fs
+
+
+createGameState :: GameState
+createGameState = GameState
+  { actors = M.empty
+  , actorQueue = PQ.empty
+  , level = emptyLevel
+  , gameTime = 0
+  , gameLog = []
+  }
+
+
+-- todo: handle adding actor that already is in the game (should be impossible)
+addActor :: Actor -> GameState -> GameState
+addActor a gs = gs { actors = M.insert (unique a) a (actors gs)
+                   , actorQueue = PQ.insert (nextTurn a) (unique a) (actorQueue gs)}
+
+
+-- if the actor already has a turn, nothing happens.
+updateActorTime :: Actor -> GameState -> GameState
+updateActorTime a gs = gs { actorQueue = newQueue }
+  -- where newQueue = case actor of Nothing -> PQ.insert (nextTurn a) (unique a) (actorQueue gs)
+  --                                Just a  -> actorQueue gs
+  where newQueue = PQ.insert (nextTurn a) (unique a) (actorQueue gs)
+
+-- updateActorInQueue :: Unique -> GameState -> GameState
+-- updateActorInQueue u gs = gs { actorQueue = PQ.insert (nextTurn a) a (actorQueue gs) }
+--   where a = M.lookup

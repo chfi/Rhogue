@@ -20,6 +20,8 @@ time queue
 
 NPCs
 
+fix module exports/imports - currently the world's most polluted namespace
+
 randomly generated levels
 
 the part where it's a game
