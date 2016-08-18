@@ -26,7 +26,8 @@ import Actor
 -- would be nice to have the type of effect actually in the type...
 data Effect =
     ActorEffect (Unique, (Actor -> Actor))
-  | LogEffect (GameLog -> GameLog)
+  -- | LogEffect (GameLog -> GameLog)
+  | LogEffect Text
   | LevelEffect (Level -> Level)
   | MultiEffect [Effect]
   -- deriving (Eq)
@@ -44,12 +45,12 @@ moveActor u p = ActorEffect (u, \a -> a { point = addPoints (point a) p
 
 
 addToLog :: Text -> Effect
-addToLog t = LogEffect (t :)
+addToLog t = LogEffect t
 
 
-addLogPrefix :: Text -> Effect -> Effect
-addLogPrefix p (LogEffect t) = LogEffect $ \t' -> p : t'
-addLogPrefix _ _ = error "Attempt to add log prefix to other effect"
+-- addLogPrefix :: Text -> Effect -> Effect
+-- addLogPrefix p (LogEffect t) = LogEffect $ \t' -> p : t'
+-- addLogPrefix _ _ = error "Attempt to add log prefix to other effect"
 
 
 
@@ -102,15 +103,19 @@ validateAction l actor action = case action of
   Wait -> Nothing
   Move d -> if isMoveValid l (point actor) d then Just $ moveActor u d else Nothing
     where u = unique actor
-  Say t -> Just $ addToLog t
+  Say t -> Just $ MultiEffect [addToLog t, moveActor u $ Point (0,0)]
+    where u = unique actor
 
+
+
+-- LogEffect :: GameLog -> GameLog
 
 updateGameState :: Effect -> GameState -> GameState
 updateGameState eff gs = case eff of
   ActorEffect (u,f) -> gs { actors = actors' }
     where actors' = M.adjust f u (actors gs)
-  f@(LogEffect _) -> gs { gameLog = prefixed (gameLog gs) }
-    where (LogEffect prefixed) = addLogPrefix (T.pack (show (gameTime gs))) f
+  (LogEffect f) -> gs { gameLog = prefixed : (gameLog gs) }
+    where prefixed = (T.pack $ "Turn " ++ (show (gameTime gs)) ++ ": ") `T.append` f
   LevelEffect f -> gs { level = f (level gs) }
   MultiEffect fs -> foldr updateGameState gs fs
 
@@ -125,19 +130,11 @@ createGameState = GameState
   }
 
 
--- todo: handle adding actor that already is in the game (should be impossible)
 addActor :: Actor -> GameState -> GameState
 addActor a gs = gs { actors = M.insert (unique a) a (actors gs)
                    , actorQueue = PQ.insert (nextTurn a) (unique a) (actorQueue gs)}
 
-
 -- if the actor already has a turn, nothing happens.
 updateActorTime :: Actor -> GameState -> GameState
 updateActorTime a gs = gs { actorQueue = newQueue }
-  -- where newQueue = case actor of Nothing -> PQ.insert (nextTurn a) (unique a) (actorQueue gs)
-  --                                Just a  -> actorQueue gs
   where newQueue = PQ.insert (nextTurn a) (unique a) (actorQueue gs)
-
--- updateActorInQueue :: Unique -> GameState -> GameState
--- updateActorInQueue u gs = gs { actorQueue = PQ.insert (nextTurn a) a (actorQueue gs) }
---   where a = M.lookup

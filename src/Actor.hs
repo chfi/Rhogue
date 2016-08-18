@@ -38,8 +38,9 @@ type Memory = Integer
 -- this doesn't make sense. An actor should be able to have
 -- either of these types of controllers - we need a sum type
 -- containing them
-type ActorController = ControlInput -> Maybe Action
-type AIController = Memory -> (ActorController, Memory)
+type HumanController = ControlInput -> Maybe Action
+type BasicController = ControlInput -> Maybe Action
+type AIController = Memory -> (BasicController, Memory)
 -- type AIController = State Memory ActorController
 
 -- an AI should really have some greater knowledge of the game,
@@ -47,8 +48,14 @@ type AIController = Memory -> (ActorController, Memory)
 -- I suppose that technically could be done by MVars etc.
 
 
+
+data ActorController =
+    Human HumanController
+  | Basic BasicController
+  -- | AI AIController
+
 -- look into the ViewPatterns GHC extension for these things
-handlePlayerInput :: ActorController
+handlePlayerInput :: HumanController
 handlePlayerInput Trigger = Nothing
 handlePlayerInput (Input ev) = case ev of
   EventSpecialKey KeyUpArrow    -> Just $ Move $ Point (0, -1)

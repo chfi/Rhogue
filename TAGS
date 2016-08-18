@@ -41,7 +41,7 @@ module LibLib0,1
 someFunc someFunc4,5
 someFunc someFunc5,6
 
-./src/Actor.hs,656
+./src/Actor.hs,790
 data ControlInput ControlInput25,26
 data ControlInput = Input Input25,26
 data ControlInput = Input Event | TriggerTrigger25,26
@@ -50,85 +50,95 @@ data Action Action27,28
   | WaitWait29,30
   | Say Say30,31
 type Memory Memory34,35
-type ActorController ActorController40,41
-type AIController AIController41,42
-handlePlayerInput handlePlayerInput50,51
-handlePlayerInput handlePlayerInput51,52
-handleAITurn handleAITurn61,62
-  | t `mod`mod63,64
-data Actor Actor68,69
-data Actor = ActorActor68,69
-  { point point69,70
-  , nextTurn nextTurn70,71
-  , speed speed71,72
-  , controller controller72,73
-  , unique unique73,74
+type HumanController HumanController40,41
+type BasicController BasicController41,42
+type AIController AIController42,43
+data ActorController ActorController51,52
+    Human Human52,53
+  | Basic Basic53,54
+handlePlayerInput handlePlayerInput57,58
+handlePlayerInput handlePlayerInput58,59
+handleAITurn handleAITurn68,69
+  | t `mod`mod70,71
+data Actor Actor75,76
+data Actor = ActorActor75,76
+  { point point76,77
+  , nextTurn nextTurn77,78
+  , speed speed78,79
+  , controller controller79,80
+  , unique unique80,81
 
-./src/GameState.hs,1128
+./src/GameState.hs,1063
 data Effect Effect26,27
     ActorEffect ActorEffect27,28
-  | LogEffect LogEffect28,29
-  | LevelEffect LevelEffect29,30
-  | MultiEffect MultiEffect30,31
-instance instance33,34
-moveActor moveActor40,41
+  | LogEffect LogEffect29,30
+  | LevelEffect LevelEffect30,31
+  | MultiEffect MultiEffect31,32
+instance instance34,35
 moveActor moveActor41,42
-addToLog addToLog45,46
+moveActor moveActor42,43
 addToLog addToLog46,47
-addLogPrefix addLogPrefix49,50
-addLogPrefix addLogPrefix50,51
-type GameLog GameLog55,56
-type ActorQueue ActorQueue56,57
-data GameState GameState58,59
-data GameState = GameStateGameState58,59
-  { actors actors59,60
-  , actorQueue actorQueue60,61
-  , level level61,62
-  , gameTime gameTime62,63
-  , gameLog gameLog63,64
-isTurnNow isTurnNow69,70
+addToLog addToLog47,48
+type GameLog GameLog56,57
+type ActorQueue ActorQueue57,58
+data GameState GameState59,60
+data GameState = GameStateGameState59,60
+  { actors actors60,61
+  , actorQueue actorQueue61,62
+  , level level62,63
+  , gameTime gameTime63,64
+  , gameLog gameLog64,65
 isTurnNow isTurnNow70,71
-getNextActor getNextActor80,81
-getNextActor getNextActor82,83
-validateAction validateAction99,100
+isTurnNow isTurnNow71,72
+getNextActor getNextActor81,82
+getNextActor getNextActor83,84
 validateAction validateAction100,101
-updateGameState updateGameState107,108
-updateGameState updateGameState108,109
-createGameState createGameState117,118
-createGameState createGameState118,119
-addActor addActor128,129
-addActor addActor129,130
-updateActorTime updateActorTime134,135
-updateActorTime updateActorTime135,136
+validateAction validateAction101,102
+updateGameState updateGameState112,113
+updateGameState updateGameState113,114
+createGameState createGameState122,123
+createGameState createGameState123,124
+addActor addActor132,133
+addActor addActor133,134
+updateActorTime updateActorTime137,138
+updateActorTime updateActorTime138,139
 
-./app/Main.hs,680
+./app/Main.hs,929
 module Main Main4,5
-drawTile drawTile25,26
-drawTile drawTile26,27
-drawRow drawRow28,29
-drawRow drawRow29,30
-drawLevel drawLevel34,35
-drawLevel drawLevel35,36
-drawPlayer drawPlayer37,38
-drawPlayer drawPlayer38,39
-drawStringLine drawStringLine43,44
-drawStringLine drawStringLine44,45
-drawLog drawLog49,50
-drawLog drawLog50,51
-pos pos56,57
-pos pos57,58
-newPlayer newPlayer60,61
-newPlayer newPlayer61,62
-main main70,71
-main main71,72
-takeTurn takeTurn90,91
-takeTurn takeTurn91,92
-drawGame drawGame128,129
-drawGame drawGame129,130
-drawLogWindow drawLogWindow136,137
-drawLogWindow drawLogWindow137,138
-run run145,146
-run run146,147
+drawTile drawTile27,28
+drawTile drawTile28,29
+drawRow drawRow30,31
+drawRow drawRow31,32
+drawLevel drawLevel36,37
+drawLevel drawLevel37,38
+drawPlayer drawPlayer39,40
+drawPlayer drawPlayer40,41
+drawStringLine drawStringLine45,46
+drawStringLine drawStringLine46,47
+drawLog drawLog51,52
+drawLog drawLog52,53
+pos pos58,59
+pos pos59,60
+newPlayer newPlayer62,63
+newPlayer newPlayer63,64
+newNPC newNPC72,73
+newNPC newNPC73,74
+main main81,82
+main main82,83
+getNextTurn getNextTurn98,99
+getNextTurn getNextTurn99,100
+getAction getAction106,107
+getAction getAction107,108
+idiotController idiotController114,115
+idiotController idiotController115,116
+takeTurn takeTurn120,121
+takeTurn takeTurn121,122
+drawGame drawGame140,141
+drawGame drawGame141,142
+drawLogWindow drawLogWindow148,149
+drawLogWindow drawLogWindow149,150
+run run157,158
+run run158,159
 
 ./Setup.hs,15
 main main1,2
