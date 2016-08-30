@@ -21,16 +21,10 @@ import Data.Unique
 
 import Level
 import Actor
+import Effect
 
 
 -- would be nice to have the type of effect actually in the type...
-data Effect =
-    ActorEffect (Unique, (Actor -> Actor))
-  -- | LogEffect (GameLog -> GameLog)
-  | LogEffect Text
-  | LevelEffect (Level -> Level)
-  | MultiEffect [Effect]
-  -- deriving (Eq)
 
 instance Show Effect where
   show (ActorEffect _) = "ActorEffect"
@@ -44,8 +38,12 @@ moveActor u p = ActorEffect (u, \a -> a { point = addPoints (point a) p
                                         , nextTurn = speed a + nextTurn a })
 
 
+actorWait :: Unique -> Effect
+actorWait u = ActorEffect (u, \a -> a { nextTurn = 1 + nextTurn a })
+
+
 addToLog :: Text -> Effect
-addToLog t = LogEffect t
+addToLog = LogEffect
 
 
 -- addLogPrefix :: Text -> Effect -> Effect
@@ -100,6 +98,15 @@ getNextActor GameState{..} = do
 
 validateAction :: Level -> Actor -> Action -> Maybe Effect
 validateAction l actor action = case action of
+  Wait -> actorWait $ unique actor
+  Move d -> if isMoveValid l (point actor) d then Just $ moveActor u d else Nothing
+    where u = unique actor
+  Say t -> Just $ MultiEffect [addToLog t, moveActor u $ Point (0,0)]
+    where u = unique actor
+
+
+effectOfAction :: Level -> Actor -> Action -> Maybe Effect
+effectOfAction l actor action = case action of
   Wait -> Nothing
   Move d -> if isMoveValid l (point actor) d then Just $ moveActor u d else Nothing
     where u = unique actor
@@ -114,8 +121,8 @@ updateGameState :: Effect -> GameState -> GameState
 updateGameState eff gs = case eff of
   ActorEffect (u,f) -> gs { actors = actors' }
     where actors' = M.adjust f u (actors gs)
-  (LogEffect f) -> gs { gameLog = prefixed : (gameLog gs) }
-    where prefixed = (T.pack $ "Turn " ++ (show (gameTime gs)) ++ ": ") `T.append` f
+  (LogEffect f) -> gs { gameLog = prefixed : gameLog gs }
+    where prefixed = T.pack $ "Turn " ++ show (gameTime gs) ++ ": " `T.append` f
   LevelEffect f -> gs { level = f (level gs) }
   MultiEffect fs -> foldr updateGameState gs fs
 

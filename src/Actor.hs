@@ -10,10 +10,15 @@ import qualified Data.Unique as U
 import           UI.NCurses
 
 
-
+-- import Effect
 import Level
 -- import GameState (Point)
 
+data Action =
+    Move Point
+  | Wait
+  | Say Text
+  deriving (Eq, Show)
 
 -- An actor is anything that can take turns on its own,
 -- including the player.
@@ -25,11 +30,6 @@ import Level
 --   overkill for now. work on what matters.
 data ControlInput = Input Event | Trigger
 
-data Action =
-    Move Point
-  | Wait
-  | Say Text
-  deriving (Eq, Show)
 
 
 type Memory = Integer
@@ -40,19 +40,32 @@ type Memory = Integer
 -- containing them
 type HumanController = ControlInput -> Maybe Action
 type BasicController = ControlInput -> Maybe Action
-type AIController = Memory -> (BasicController, Memory)
+type IOController = IO (Maybe Action)
+-- type AIController a = a -> ControlInput -> (Maybe Action, a)
+
+
+data AIController a = AIController { helper :: a -> ControlInput -> (Maybe Action, a)
+                                   , runner :: ControlInput -> (Maybe Action, a)}
+-- type AIController = a -> (ControlInput -> Maybe Action, a)
+-- type AIController = ControlInput -> (s -> (Maybe Action, s))
 -- type AIController = State Memory ActorController
 
 -- an AI should really have some greater knowledge of the game,
 -- possibly specific to only that actor...
 -- I suppose that technically could be done by MVars etc.
 
+-- type AIController = a -> ControlInput -> (Maybe Action, a -> ControlInput (Maybe Action, b))
+-- data AIController s =
+--   AIController { memory :: s
+--                , runTurn :: ControlInput -> (s -> (Maybe Action, s))
+--                }
+
 
 
 data ActorController =
     Human HumanController
   | Basic BasicController
-  -- | AI AIController
+  | AI AIController
 
 -- look into the ViewPatterns GHC extension for these things
 handlePlayerInput :: HumanController
@@ -66,11 +79,11 @@ handlePlayerInput (Input ev) = case ev of
   _ -> Nothing
 
 
-handleAITurn :: AIController
-handleAITurn t
-  | t `mod` 2 == 0 = (\_ -> Just $ Move $ Point (-1, 0), t + 1)
-  | t `mod` 3 == 0 = (\_ -> Just $ Move $ Point (1, 0), t + 1)
-  | otherwise = (const Nothing, t + 1)
+-- handleAITurn :: AIController
+-- handleAITurn t
+--   | t `mod` 2 == 0 = (\_ -> Just $ Move $ Point (-1, 0), t + 1)
+--   | t `mod` 3 == 0 = (\_ -> Just $ Move $ Point (1, 0), t + 1)
+--   | otherwise = (const Nothing, t + 1)
 
 
 data Actor = Actor

@@ -32,7 +32,7 @@ drawRow :: [Tile] -> Update ()
 drawRow r = do
   (row,col) <- cursorPosition
   mapM_ drawTile r
-  moveCursor (row + 1) col
+  moveCursor (row + 1) cok
 
 drawLevel :: Level -> Update ()
 drawLevel l = mapM_ drawRow $ Level.levelToList l
@@ -104,16 +104,31 @@ getNextTurn gs = do
 
 
 
-getAction :: GameState -> Window -> ActorController -> Curses (Maybe Action)
-getAction gs scr ac = case ac of
-  Human hc -> do
-    ev <- getEvent scr Nothing
-    return $ fmap Input ev >>= hc
-  Basic bc -> return $ bc Trigger
+-- a more flexible way of doing this would be to use threads and MVars, I think.
+-- ... maybe.
+-- getAction :: GameState -> Window -> ActorController -> Curses (Maybe Action)
+-- getAction gs scr ac = case ac of
+--   Human hc -> do
+--     ev <- getEvent scr Nothing
+--     return $ fmap Input ev >>= hc
+--   Basic bc -> return $ bc Trigger
+--   AI aic ->
+
 
 
 idiotController :: BasicController
 idiotController _ = Just $ Say "I'm a dumbass NPC"
+
+
+getAction :: GameState -> Window -> Actor -> Curses (Maybe Action)
+getAction gs scr a = case controller a of
+  Human hc -> do
+    ev <- getEvent scr Nothing
+    return $ fmap Input ev >>= hc
+  Basic bc -> return $ bc Trigger
+  -- AI aic -> do
+  --   let (action, aic') = runTurn aic aic Trigger
+  --   return action
 
 
 
@@ -155,6 +170,10 @@ drawLogWindow logscr gs' =
     drawLog (gameLog gs')
 
 
+
+-- basically, the whole game flow/turn taking part needs to be rewritten,
+-- with special thought to make human and AI players indistinguishable
+-- to the game on this level.
 run :: GameState -> (Window, Window) -> Curses ()
 run gs (scr, logscr) = do
   let turn = isTurnNow gs

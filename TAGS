@@ -41,67 +41,105 @@ module LibLib0,1
 someFunc someFunc4,5
 someFunc someFunc5,6
 
-./src/Actor.hs,790
-data ControlInput ControlInput25,26
-data ControlInput = Input Input25,26
-data ControlInput = Input Event | TriggerTrigger25,26
-data Action Action27,28
-    Move Move28,29
-  | WaitWait29,30
-  | Say Say30,31
+./src/AI/Bot/BackAndForth.hs,565
+module AI.Bot.BackAndForth AI.Bot.BackAndForth2,3
+data Direction Direction12,13
+data Direction = North North12,13
+data Direction = North | East East12,13
+data Direction = North | East | South South12,13
+data Direction = North | East | South | West West12,13
+data Step Step13,14
+data Step = Back Back13,14
+data Step = Back | Forth Forth13,14
+data Memory Memory14,15
+data Memory = Memory Memory14,15
+revDir revDir17,18
+revDir revDir18,19
+backAndForth' backAndForth'32,33
+backAndForth' backAndForth'33,34
+backAndForth backAndForth38,39
+
+./src/Actor.hs,961
+data Action Action16,17
+    Move Move17,18
+  | WaitWait18,19
+  | Say Say19,20
+data ControlInput ControlInput30,31
+data ControlInput = Input Input30,31
+data ControlInput = Input Event | TriggerTrigger30,31
 type Memory Memory34,35
 type HumanController HumanController40,41
 type BasicController BasicController41,42
-type AIController AIController42,43
-data ActorController ActorController51,52
-    Human Human52,53
-  | Basic Basic53,54
-handlePlayerInput handlePlayerInput57,58
-handlePlayerInput handlePlayerInput58,59
-handleAITurn handleAITurn68,69
-  | t `mod`mod70,71
-data Actor Actor75,76
-data Actor = ActorActor75,76
-  { point point76,77
-  , nextTurn nextTurn77,78
-  , speed speed78,79
-  , controller controller79,80
-  , unique unique80,81
+type IOController IOController42,43
+data AIController AIController46,47
+data AIController a = AIController AIController46,47
+data AIController a = AIController { helper helper46,47
+                                   , runner runner47,48
+data ActorController ActorController64,65
+    Human Human65,66
+  | Basic Basic66,67
+  | AI AI67,68
+handlePlayerInput handlePlayerInput70,71
+handlePlayerInput handlePlayerInput71,72
+data Actor Actor88,89
+data Actor = ActorActor88,89
+  { point point89,90
+  , nextTurn nextTurn90,91
+  , speed speed91,92
+  , controller controller92,93
+  , unique unique93,94
 
-./src/GameState.hs,1063
-data Effect Effect26,27
-    ActorEffect ActorEffect27,28
-  | LogEffect LogEffect29,30
-  | LevelEffect LevelEffect30,31
-  | MultiEffect MultiEffect31,32
-instance instance34,35
-moveActor moveActor41,42
-moveActor moveActor42,43
-addToLog addToLog46,47
-addToLog addToLog47,48
-type GameLog GameLog56,57
-type ActorQueue ActorQueue57,58
-data GameState GameState59,60
-data GameState = GameStateGameState59,60
-  { actors actors60,61
-  , actorQueue actorQueue61,62
-  , level level62,63
-  , gameTime gameTime63,64
-  , gameLog gameLog64,65
-isTurnNow isTurnNow70,71
-isTurnNow isTurnNow71,72
+./src/GameState.hs,1030
+instance instance28,29
+moveActor moveActor35,36
+moveActor moveActor36,37
+actorWait actorWait40,41
+actorWait actorWait41,42
+addToLog addToLog44,45
+addToLog addToLog45,46
+type GameLog GameLog54,55
+type ActorQueue ActorQueue55,56
+data GameState GameState57,58
+data GameState = GameStateGameState57,58
+  { actors actors58,59
+  , actorQueue actorQueue59,60
+  , level level60,61
+  , gameTime gameTime61,62
+  , gameLog gameLog62,63
+isTurnNow isTurnNow68,69
+isTurnNow isTurnNow69,70
+getNextActor getNextActor79,80
 getNextActor getNextActor81,82
-getNextActor getNextActor83,84
-validateAction validateAction100,101
-validateAction validateAction101,102
-updateGameState updateGameState112,113
-updateGameState updateGameState113,114
-createGameState createGameState122,123
-createGameState createGameState123,124
-addActor addActor132,133
-addActor addActor133,134
-updateActorTime updateActorTime137,138
-updateActorTime updateActorTime138,139
+validateAction validateAction98,99
+validateAction validateAction99,100
+effectOfAction effectOfAction107,108
+effectOfAction effectOfAction108,109
+updateGameState updateGameState119,120
+updateGameState updateGameState120,121
+createGameState createGameState129,130
+createGameState createGameState130,131
+addActor addActor139,140
+addActor addActor140,141
+updateActorTime updateActorTime144,145
+updateActorTime updateActorTime145,146
+
+./src/Effect.hs,511
+data Effect Effect14,15
+    ActorEffect ActorEffect15,16
+  | LogEffect LogEffect17,18
+  | LevelEffect LevelEffect18,19
+  | MultiEffect MultiEffect19,20
+data ActionError ActionError22,23
+    MovementBlockedMovementBlocked23,24
+  | IllegalAction IllegalAction24,25
+effectOfAction effectOfAction28,29
+effectOfAction effectOfAction29,30
+moveActor moveActor40,41
+moveActor moveActor41,42
+actorWait actorWait44,45
+actorWait actorWait45,46
+addToLog addToLog47,48
+addToLog addToLog48,49
 
 ./app/Main.hs,929
 module Main Main4,5
@@ -127,18 +165,18 @@ main main81,82
 main main82,83
 getNextTurn getNextTurn98,99
 getNextTurn getNextTurn99,100
-getAction getAction106,107
-getAction getAction107,108
-idiotController idiotController114,115
-idiotController idiotController115,116
-takeTurn takeTurn120,121
-takeTurn takeTurn121,122
-drawGame drawGame140,141
-drawGame drawGame141,142
-drawLogWindow drawLogWindow148,149
-drawLogWindow drawLogWindow149,150
-run run157,158
-run run158,159
+idiotController idiotController118,119
+idiotController idiotController119,120
+getAction getAction122,123
+getAction getAction123,124
+takeTurn takeTurn135,136
+takeTurn takeTurn136,137
+drawGame drawGame155,156
+drawGame drawGame156,157
+drawLogWindow drawLogWindow163,164
+drawLogWindow drawLogWindow164,165
+run run176,177
+run run177,178
 
 ./Setup.hs,15
 main main1,2
